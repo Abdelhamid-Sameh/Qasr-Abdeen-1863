@@ -18,8 +18,24 @@ app.use(session({
   cookie: { maxAge: null }
 }));
 
+var MongoClient = require('mongodb').MongoClient;
+
+var db;
+
+async function connectToDb() {
+  try {
+    const client = await MongoClient.connect("mongodb://127.0.0.1:27017");
+    db = client.db('myDB');
+  } catch (err) {
+    console.error('Failed to connect to the DB', err);
+    process.exit(1);
+  }
+}
+
+connectToDb();
+
 function checkAuth(req, res, next) {
-  if (!req.session.isAuthenticated && req.path !== '/') {
+  if (!req.session.isAuthenticated && req.path !== '/' && req.path !== '/registration' && req.path !== '/register') {
       req.session.redirectTo = req.originalUrl;
       return res.redirect('/');
   }
@@ -32,19 +48,51 @@ app.get('/', function(req,res){
   res.render('login', { errormsg: ''});
 });
 
-app.post('/', function(req, res) {
-  if (req.body.username === 'admin' && req.body.password === 'admin') {
+app.post('/', async function(req, res) {
+  const usname = req.body.username;
+  const pass = req.body.password;
+
+  if (!usname || !pass) {
+    return res.render('login', { errormsg: "Username and password cannot be empty" });
+  }
+
+  const user = await db.collection('myCollection').findOne({ usname });
+
+  if(!user){
+    return res.render('login', {errormsg: "User not found. Please register."});
+  }
+
+  if (user.pass === pass) {
       req.session.isAuthenticated = true;
       const redirectTo = req.session.redirectTo || '/home';
       delete req.session.redirectTo; 
       return res.redirect(redirectTo);
   } else {
-      res.render('login', { errormsg: "Invalid username or password" });
+      res.render('login', { errormsg: "Invalid password" });
   }
 });
 
 app.get('/registration', function(req,res){
-  res.render('registration');
+  res.render('registration', { errormsg: ''});
+});
+
+
+app.post('/register', async function(req,res){
+  const usname = req.body.username;
+  const pass = req.body.password;
+
+  if (!usname || !pass) {
+    return res.render('registration', { errormsg: "Username and password cannot be empty" });
+  }
+
+  const user = await db.collection('myCollection').findOne({ usname });
+
+  if(user){
+    return res.render('registration', {errormsg: "Username already taken"});
+  }
+
+  const result = await db.collection('myCollection').insertOne({ usname, pass });
+  res.redirect('/');
 });
 
 app.get('/home', function(req,res){

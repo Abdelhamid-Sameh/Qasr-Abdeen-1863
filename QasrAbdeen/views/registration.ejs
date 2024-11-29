@@ -38,7 +38,12 @@
             Username: <br>
             <input type="text" id="user" name="username"> <br>
             Password: <br>
-            <input type="password" id="password" name="password"> <br> <br>
+            <input type="password" id="password" name="password"> 
+            <br>
+            <% if (errormsg) { %>
+                <p style="color: red;"><%= errormsg %></p>
+            <% } %>
+            <br>
             <input type="submit" id="simple_click" class="btn btn-secondary" value="Register"> <br>
         </form>
     </div>
