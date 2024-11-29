@@ -39,6 +39,10 @@
             Password:<br>
             <input type="password" name="password">
             <br>
+            <% if (success) { %>
+                <p style="color: green;"><%= success %></p>
+            <% } %>
+            <br>
             <% if (errormsg) { %>
                 <p style="color: red;"><%= errormsg %></p>
             <% } %>

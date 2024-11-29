@@ -45,7 +45,8 @@ function checkAuth(req, res, next) {
 app.use(checkAuth);
 
 app.get('/', function(req,res){
-  res.render('login', { errormsg: ''});
+  const successMessage = req.query.success || '';
+  res.render('login', { errormsg: '', success: successMessage});
 });
 
 app.post('/', async function(req, res) {
@@ -53,13 +54,13 @@ app.post('/', async function(req, res) {
   const pass = req.body.password;
 
   if (!usname || !pass) {
-    return res.render('login', { errormsg: "Username and password cannot be empty" });
+    return res.render('login', { errormsg: "Username and password cannot be empty", success: ''});
   }
 
   const user = await db.collection('myCollection').findOne({ usname });
 
   if(!user){
-    return res.render('login', {errormsg: "User not found. Please register."});
+    return res.render('login', {errormsg: "User not found. Please register.", success: ''});
   }
 
   if (user.pass === pass) {
@@ -68,7 +69,7 @@ app.post('/', async function(req, res) {
       delete req.session.redirectTo; 
       return res.redirect(redirectTo);
   } else {
-      res.render('login', { errormsg: "Invalid password" });
+      res.render('login', { errormsg: "Invalid password", success: ''});
   }
 });
 
@@ -92,8 +93,10 @@ app.post('/register', async function(req,res){
   }
 
   const result = await db.collection('myCollection').insertOne({ usname, pass });
-  res.redirect('/');
+  
+  res.redirect('/?success=Registration was successful!');
 });
+
 
 app.get('/home', function(req,res){
   res.render('home');
