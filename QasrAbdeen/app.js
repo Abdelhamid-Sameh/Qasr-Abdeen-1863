@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: 'QasrAbdeen1863', 
+  secret: 'QasrAbdeen1863',
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: null }
@@ -36,51 +36,52 @@ connectToDb();
 
 function checkAuth(req, res, next) {
   if (!req.session.isAuthenticated && req.path !== '/' && req.path !== '/registration' && req.path !== '/register') {
-      req.session.redirectTo = req.originalUrl;
-      return res.redirect('/');
+    req.session.redirectTo = req.originalUrl;
+    return res.redirect('/');
   }
   next();
 }
 
 app.use(checkAuth);
 
-app.get('/', function(req,res){
+app.get('/', function (req, res) {
   const successMessage = req.query.success || '';
-  res.render('login', { errormsg: '', success: successMessage});
+  res.render('login', { errormsg: '', success: successMessage });
 });
 
-app.post('/', async function(req, res) {
+app.post('/', async function (req, res) {
   const usname = req.body.username;
   const pass = req.body.password;
 
   if (!usname || !pass) {
-    return res.render('login', { errormsg: "Username and password cannot be empty", success: ''});
+    return res.render('login', { errormsg: "Username and password cannot be empty", success: '' });
   }
 
   const user = await db.collection('myCollection').findOne({ usname });
 
-  if(!user){
-    return res.render('login', {errormsg: "User not found. Please register.", success: ''});
+  if (!user) {
+    return res.render('login', { errormsg: "User not found. Please register.", success: '' });
   }
 
   if (user.pass === pass) {
-      req.session.isAuthenticated = true;
-      const redirectTo = req.session.redirectTo || '/home';
-      delete req.session.redirectTo; 
-      return res.redirect(redirectTo);
+    req.session.isAuthenticated = true;
+    const redirectTo = req.session.redirectTo || '/home';
+    delete req.session.redirectTo;
+    return res.redirect(redirectTo);
   } else {
-      res.render('login', { errormsg: "Invalid password", success: ''});
+    res.render('login', { errormsg: "Invalid password", success: '' });
   }
 });
 
-app.get('/registration', function(req,res){
-  res.render('registration', { errormsg: ''});
+app.get('/registration', function (req, res) {
+  res.render('registration', { errormsg: '' });
 });
 
 
-app.post('/register', async function(req,res){
+app.post('/register', async function (req, res) {
   const usname = req.body.username;
   const pass = req.body.password;
+  var wanttogolist = [];
 
   if (!usname || !pass) {
     return res.render('registration', { errormsg: "Username and password cannot be empty" });
@@ -88,91 +89,85 @@ app.post('/register', async function(req,res){
 
   const user = await db.collection('myCollection').findOne({ usname });
 
-  if(user){
-    return res.render('registration', {errormsg: "Username already taken"});
+  if (user) {
+    return res.render('registration', { errormsg: "Username already taken" });
   }
 
-  const result = await db.collection('myCollection').insertOne({ usname, pass });
-  
+  const result = await db.collection('myCollection').insertOne({ usname, pass, wanttogolist });
+
   res.redirect('/?success=Registration was successful!');
 });
 
-app.post('/wanttogo', async function(req,res){
-  
-  const destination =req.body.destination;
-  const username =req.session.username;
+
+app.post('/addtowanttogo', async function (req, res) {
+
+  const destination = req.body.destination;
+  const username = req.session.username;
 
 
- 
-    const user = await db.collection('myCollection').findOne({ username });
-    
-  if (user){
-    const listWantToGo = user.WantToGo || [];
-    if (listWantToGo.includes(destination)){
-      return res.render('wanttogo', { message: 'Destination "${destination}" is already in your Want-to-Go List.', listWantToGo });
+
+  const user = await db.collection('myCollection').findOne({ username });
+
+  if (user) {
+    if (user.wanttogolist.includes(destination)) {
+      return res.status(200).json({ message: 'Destination is already in your Want-to-Go list!' });
     }
-    else{
+    else {
       await db.collection('myCollection').updateOne(
-        { usname: username },
-        { $push: { wantToGo: destination } }
+        { username },
+        { $push: { wanttogolist: destination } }
       );
-  
-      
-      res.render('wanttogo', { 
-        message: 'Destination "${destination}" has been added to your Want-to-Go List.',
-        listWantToGo: [...listWantToGo, destination]
-    
-
-  });
+      return res.status(200).json({ message: 'Destination is added to your Want-to-Go list!' });
     }
   }
+
 });
 
-app.get('/home', function(req,res){
+app.get('/home', function (req, res) {
   res.render('home');
 });
 
-app.get('/hiking', function(req,res){
+app.get('/hiking', function (req, res) {
   res.render('hiking');
 });
 
-app.get('/annapurna', function(req,res){
+app.get('/annapurna', function (req, res) {
   res.render('annapurna');
 });
 
-app.get('/bali', function(req,res){
+app.get('/bali', function (req, res) {
   res.render('bali');
 });
 
-app.get('/cities', function(req,res){
+app.get('/cities', function (req, res) {
   res.render('cities');
 });
 
-app.get('/inca', function(req,res){
+app.get('/inca', function (req, res) {
   res.render('inca');
 });
 
-app.get('/islands', function(req,res){
+app.get('/islands', function (req, res) {
   res.render('islands');
 });
 
-app.get('/paris', function(req,res){
+app.get('/paris', function (req, res) {
   res.render('paris');
 });
 
-app.get('/rome', function(req,res){
+app.get('/rome', function (req, res) {
   res.render('rome');
 });
 
-app.get('/santorini', function(req,res){
+app.get('/santorini', function (req, res) {
   res.render('santorini');
 });
 
-app.get('/searchresults', function(req,res){
+app.get('/searchresults', function (req, res) {
   res.render('searchresults');
 });
 
-app.get('/wanttogo', function(req,res){
+app.get('/wanttogo', function (req, res) {
   res.render('wanttogo');
 });
 
