@@ -97,6 +97,36 @@ app.post('/register', async function(req,res){
   res.redirect('/?success=Registration was successful!');
 });
 
+app.post('/wanttogo', async function(req,res){
+  
+  const destination =req.body.destination;
+  const username =req.session.username;
+
+
+ 
+    const user = await db.collection('myCollection').findOne({ username });
+    
+  if (user){
+    const listWantToGo = user.WantToGo || [];
+    if (listWantToGo.includes(destination)){
+      return res.render('wanttogo', { message: 'Destination "${destination}" is already in your Want-to-Go List.', listWantToGo });
+    }
+    else{
+      await db.collection('myCollection').updateOne(
+        { usname: username },
+        { $push: { wantToGo: destination } }
+      );
+  
+      
+      res.render('wanttogo', { 
+        message: 'Destination "${destination}" has been added to your Want-to-Go List.',
+        listWantToGo: [...listWantToGo, destination]
+    
+
+  });
+    }
+  }
+});
 
 app.get('/home', function(req,res){
   res.render('home');
