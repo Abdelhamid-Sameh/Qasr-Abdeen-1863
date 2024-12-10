@@ -120,6 +120,9 @@ app.post('/addtowanttogo', async function (req, res) {
       return res.status(200).json({ message: 'Destination is added to your Want-to-Go list!' });
     }
   }
+  else {
+    return res.status(404).send('User not found');
+  }
 
 });
 
@@ -167,8 +170,18 @@ app.get('/searchresults', function (req, res) {
   res.render('searchresults');
 });
 
-app.get('/wanttogo', function (req, res) {
-  res.render('wanttogo');
+app.get('/wanttogo', async function (req, res) {
+  const username = req.session.username;
+
+  const user = await db.collection('myCollection').findOne({ username });
+
+  if (!user) {
+    return res.status(404).send('User not found');
+  }
+
+  const wantToGoList = user.wanttogolist;
+
+  res.render('wanttogo', { wantToGoList });
 });
 
 
