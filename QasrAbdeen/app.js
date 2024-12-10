@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: 'QasrAbdeen1863',
+  secret: 'QasrAbdeen1863', // fun fact : 1863 is the year Qasr Abdeen was built (not sure tbh)
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: null }
@@ -57,7 +57,7 @@ app.post('/', async function (req, res) {
     return res.render('login', { errormsg: "Username and password cannot be empty", success: '' });
   }
 
-  const user = await db.collection('myCollection').findOne({ usname });
+  const user = await db.collection('myCollection').findOne({ usname: usname });
 
   if (!user) {
     return res.render('login', { errormsg: "User not found. Please register.", success: '' });
@@ -67,6 +67,7 @@ app.post('/', async function (req, res) {
     req.session.isAuthenticated = true;
     const redirectTo = req.session.redirectTo || '/home';
     delete req.session.redirectTo;
+    req.session.username = usname;
     return res.redirect(redirectTo);
   } else {
     res.render('login', { errormsg: "Invalid password", success: '' });
@@ -87,7 +88,7 @@ app.post('/register', async function (req, res) {
     return res.render('registration', { errormsg: "Username and password cannot be empty" });
   }
 
-  const user = await db.collection('myCollection').findOne({ usname });
+  const user = await db.collection('myCollection').findOne({ usname: usname });
 
   if (user) {
     return res.render('registration', { errormsg: "Username already taken" });
@@ -104,24 +105,23 @@ app.post('/addtowanttogo', async function (req, res) {
   const destination = req.body.destination;
   const username = req.session.username;
 
-
-
-  const user = await db.collection('myCollection').findOne({ username });
-
+  const user = await db.collection('myCollection').findOne({ usname: username });
+ 
   if (user) {
     if (user.wanttogolist.includes(destination)) {
       return res.status(200).json({ message: 'Destination is already in your Want-to-Go list!' });
     }
     else {
       await db.collection('myCollection').updateOne(
-        { username },
+        { usname: username },
         { $push: { wanttogolist: destination } }
       );
       return res.status(200).json({ message: 'Destination is added to your Want-to-Go list!' });
     }
   }
   else {
-    return res.status(404).send('User not found');
+    return res.status(404).send('User not found'); //m4 3aref hayewsal hena ezay lw hwa m4 user bs aho e7tyaty
+                                                   //update: b2aly sa3a basala7 fe error 34an m4 la2y el user "clown emoji"
   }
 
 });
@@ -173,10 +173,10 @@ app.get('/searchresults', function (req, res) {
 app.get('/wanttogo', async function (req, res) {
   const username = req.session.username;
 
-  const user = await db.collection('myCollection').findOne({ username });
+  const user = await db.collection('myCollection').findOne({ usname: username });
 
   if (!user) {
-    return res.status(404).send('User not found');
+    return res.status(404).send('User not found'); //line #123 beysalem 3leek
   }
 
   const wantToGoList = user.wanttogolist;
@@ -184,5 +184,9 @@ app.get('/wanttogo', async function (req, res) {
   res.render('wanttogo', { wantToGoList });
 });
 
+//favicon.png is just a photo of the real Qasr Abdeen :)
+//sometimes the app fails to GET favicon.ico . just reload the home page from the url
+
+//Dedicated to Ahmed Helmy, the best Networks TA to ever exist (please mat2ol4 lel DR. 3la esm el team :) )
 
 app.listen(3000);

@@ -15,6 +15,11 @@
             -webkit-text-stroke: 1px blue;
         }
 
+        p {
+            color: white;
+            text-align: center;
+        }
+
         .container1 {
             position: fixed;
             left: 50px;
@@ -124,7 +129,9 @@
                         <br>
                         <button onclick="location.href = '<%= destination %>';" id="<%= destination.slice(1) %>"
                             class="btn btn-secondary ml-3"> View </button>
-                    </div>
+                    </div> <!-- slice(n) removes first n characters from the string -->
+                            <!-- this is because the destinations gets stored in our database like this : -->
+                             <!-- /annapurna so we need to remove the / -->
                 </div>
             <% }) %>
         <% } %>
