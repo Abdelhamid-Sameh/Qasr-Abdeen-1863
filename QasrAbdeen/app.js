@@ -187,6 +187,6 @@ app.get('/wanttogo', async function (req, res) {
 //favicon.png is just a photo of the real Qasr Abdeen :)
 //sometimes the app fails to GET favicon.ico . just reload the home page from the url
 
-//Dedicated to Ahmed Helmy, the best Networks TA to ever exist (please mat2ol4 lel DR. 3la esm el team :) )
+//Dedicated to Ahmed Helmy, the best Networks TA to ever exist
 
 app.listen(3000);
