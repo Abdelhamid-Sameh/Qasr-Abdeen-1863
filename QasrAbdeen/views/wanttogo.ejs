@@ -68,25 +68,6 @@
             align-items: center;
         }
 
-        #inca,
-        #annapurna,
-        #bali,
-        #paris,
-        #rome,
-        #santorini {
-            position: relative;
-            left: 0px;
-        }
-
-        #label1,
-        #label2,
-        #label3,
-        #label4,
-        #label5,
-        #label6 {
-            position: relative;
-            left: 0px;
-        }
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -124,7 +105,7 @@
                     <br>
                     <div class="content-center">
                         <label id="label<%= index + 1 %>" class="ml-4 my-2">
-                            <%= destination.slice(1) %>
+                            <%= Texts[index] %>
                         </label>
                         <br>
                         <button onclick="location.href = '<%= destination %>';" id="<%= destination.slice(1) %>"

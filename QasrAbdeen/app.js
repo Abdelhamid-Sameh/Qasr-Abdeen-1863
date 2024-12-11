@@ -180,8 +180,42 @@ app.get('/wanttogo', async function (req, res) {
   }
 
   const wantToGoList = user.wanttogolist;
+  var Texts = [];
 
-  res.render('wanttogo', { wantToGoList });
+  wantToGoList.forEach(element => {
+    const elem = element.slice(1);
+    switch(elem){
+      case "annapurna": Texts.push("Annapurna Circuit"); break;
+      case "bali":Texts.push("Bali Island"); break;
+      case "inca":Texts.push("Inca Trail to Machu Picchu"); break;
+      case "paris":Texts.push("Paris"); break;
+      case "rome":Texts.push("Rome"); break;
+      case "santorini":Texts.push("Santorini Island"); break;
+      default: break;
+    }
+  });
+
+  res.render('wanttogo', { wantToGoList: wantToGoList, Texts: Texts });
+});
+
+app.post("/search", async function (req, res){
+  const allDestinations = ["Annapurna Circuit","Bali Island","Inca Trail to Machu Picchu","Paris","Rome","Santorini Island"];
+  const allDestinationsURLs = ["/annapurna","/bali","/inca","/paris","/rome","/santorini"];
+  const destinationSearched = req.body.Search;
+  var searchOutput = [];
+
+  if(!req.body.Search){
+    return res.render('searchresults', { Texts: allDestinations, Output : searchOutput , URLs : allDestinationsURLs  });
+  }
+
+  allDestinations.forEach(destination => {
+    if(destination.toLowerCase().trim().includes(destinationSearched)){
+      searchOutput.push(allDestinations.indexOf(destination));
+    }
+  });
+
+  res.render('searchresults', { Texts: allDestinations, Output : searchOutput , URLs : allDestinationsURLs  });
+
 });
 
 //favicon.png is just a photo of the real Qasr Abdeen :)

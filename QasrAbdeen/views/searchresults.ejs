@@ -13,6 +13,60 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
+
+        p {
+            color: red;
+            text-align: center;
+        }
+
+        .container1 {
+            position: fixed;
+            left: 50px;
+            top: 150px;
+            color: white;
+        }
+
+        .container2 {
+            position: fixed;
+            left: 300px;
+            top: 150px;
+            color: white;
+        }
+
+        .container3 {
+            position: fixed;
+            left: 550px;
+            top: 150px;
+            color: white;
+        }
+
+        .container4 {
+            position: fixed;
+            left: 800px;
+            top: 150px;
+            color: white;
+        }
+
+        .container5 {
+            position: fixed;
+            left: 1050px;
+            top: 150px;
+            color: white;
+        }
+
+        .container6 {
+            position: fixed;
+            left: 1300px;
+            top: 150px;
+            color: white;
+        }
+
+        .content-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,5 +92,25 @@
             </form>
         </div>
     </nav>
+    <h1>Your search results</h1>
+
+    <% if (Output.length===0) { %>
+        <p>Destination not found !</p>
+        <% } else { %>
+            <% Output.forEach((destination, index)=> { %>
+                <div class="container<%= index + 1 %>">
+                    <img id="image" src="<%= URLs[destination] %>.png" width="193" height="300">
+                    <br>
+                    <div class="content-center">
+                        <label id="label<%= index + 1 %>" class="ml-4 my-2">
+                            <%= Texts[destination] %>
+                        </label>
+                        <br>
+                        <button onclick="location.href = '<%= URLs[destination] %>';" id="<%= URLs[destination].slice(1) %>"
+                            class="btn btn-secondary ml-3"> View </button>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
 </body>
 </html>
