@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
-  secret: 'QasrAbdeen1863', // fun fact : 1863 is the year Qasr Abdeen was built (not sure tbh)
+  secret: 'QasrAbdeen1863',
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: null }
@@ -120,8 +120,7 @@ app.post('/addtowanttogo', async function (req, res) {
     }
   }
   else {
-    return res.status(404).send('User not found'); //m4 3aref hayewsal hena ezay lw hwa m4 user bs aho e7tyaty
-                                                   //update: b2aly sa3a basala7 fe error 34an m4 la2y el user "clown emoji"
+    return res.status(404).send('User not found');
   }
 
 });
@@ -176,7 +175,7 @@ app.get('/wanttogo', async function (req, res) {
   const user = await db.collection('myCollection').findOne({ usname: username });
 
   if (!user) {
-    return res.status(404).send('User not found'); //line #123 beysalem 3leek
+    return res.status(404).send('User not found');
   }
 
   const wantToGoList = user.wanttogolist;
@@ -217,10 +216,5 @@ app.post("/search", async function (req, res){
   res.render('searchresults', { Texts: allDestinations, Output : searchOutput , URLs : allDestinationsURLs  });
 
 });
-
-//favicon.png is just a photo of the real Qasr Abdeen :)
-//sometimes the app fails to GET favicon.ico . just reload the home page from the url
-
-//Dedicated to Ahmed Helmy, the best Networks TA to ever exist
 
 app.listen(3000);
